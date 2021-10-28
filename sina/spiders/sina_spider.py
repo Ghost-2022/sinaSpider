@@ -9,7 +9,7 @@ import scrapy
 import requests
 from scrapy import Request
 
-from sina import settings
+from sina import settings, items
 
 
 class SinaSpiderSpider(scrapy.Spider):
@@ -59,10 +59,10 @@ class SinaSpiderSpider(scrapy.Spider):
             for url in self.urls:
                 yield Request(url, callback=self.parse)
 
-        for next_url in next_urls[:1]:
+        for next_url in next_urls:
             yield Request(response.urljoin(next_url.get()), callback=self.parse)
 
-        for detail_url in response.xpath('//p[@class="from"]/a[1]/@href')[:1]:
+        for detail_url in response.xpath('//p[@class="from"]/a[1]/@href'):
             mblogid = detail_url.get().split('/')[-1].split('?')[0]
             detail_url = 'https://weibo.com/ajax/statuses/show?id={}'.format(mblogid)
             yield Request(detail_url, callback=self.parse_detail)
@@ -74,6 +74,7 @@ class SinaSpiderSpider(scrapy.Spider):
             self.logger.error(f'数据解析异常：{response.url}, {response.text}')
             return
         mblogid = data.get('mblogid', '')
+        user_id = data.get('user', {}).get('id', '')
         detail_id = data.get('mid', '')
         author = data.get('user', {}).get('screen_name', '')
         profile_url = data.get('user', {}).get('profile_url', '')
@@ -82,8 +83,9 @@ class SinaSpiderSpider(scrapy.Spider):
             publish_time = datetime.datetime.strptime(data.get('created_at', ''), '%a %b %d %H:%M:%S %z %Y')
         except Exception:
             publish_time = datetime.datetime.now()
+        publish_time = publish_time.strftime('%Y-%m-%d %H:%M:%S')
         content = data.get('text_raw', '')
-        source = data.get('source', '').split()[0]
+        source = data.get('source', '').split()
         attitudes_count = data.get('attitudes_count', 0)
         comments_count = data.get('comments_count', 0)
         if data.get('isLongText') and mblogid:
@@ -95,11 +97,58 @@ class SinaSpiderSpider(scrapy.Spider):
                 self.logger.error(f"长文本获取失败：{long_text_url}, {traceback.format_exc()}")
             else:
                 content = long_text_data.get('data', {}).get('longTextContent', '')
-        print(author, author_url, publish_time, content, source, attitudes_count, comments_count)
+        content_item = items.SinaItem()
+        content_item['author'] = author
+        content_item['content_type'] = 'article'
+        content_item['author_url'] = author_url
+        content_item['article_url'] = f"https://weibo.com/{user_id}/{mblogid}"
+        content_item['publish_time'] = publish_time
+        content_item['content'] = content
+        content_item['search_id'] = self.search_id
+        content_item['source'] = source[0] if source else ''
+        content_item['attitudes_count'] = attitudes_count
+        content_item['comments_count'] = comments_count
+        content_item['detail_id'] = detail_id
+        content_item['mblogid'] = mblogid
+        yield content_item
 
         comment_url = 'https://weibo.com/ajax/statuses/buildComments?is_reload=1&id={}' \
                       '&is_show_bulletin=2&is_mix=0&count=40'.format(detail_id)
-        yield Request(comment_url, callback=self.parse_detail)
+        yield Request(comment_url, callback=self.parse_comment)
 
     def parse_comment(self, response: scrapy.http.Response, **kwargs):
-        pass
+        try:
+            data = json.loads(response.text).get('data', [])
+        except Exception:
+            self.logger.error(f'数据解析异常：{response.url}, {response.text}')
+            return
+
+        for item in data:
+            comment_id = item.get('mid', '')
+            author = item.get('user', {}).get('screen_name', '')
+            profile_url = item.get('user', {}).get('profile_url', '')
+            author_url = response.urljoin(profile_url) if profile_url else ''
+            try:
+                publish_time = datetime.datetime.strptime(
+                    item.get('created_at', ''), '%a %b %d %H:%M:%S %z %Y')
+            except Exception:
+                publish_time = datetime.datetime.now()
+            publish_time = publish_time.strftime('%Y-%m-%d %H:%M:%S')
+            content = item.get('text_raw', '')
+            like_counts = item.get('like_counts', '')
+            comments_count = len(item.get('comments', []))
+
+            content_item = items.SinaItem()
+            content_item['author'] = author
+            content_item['content_type'] = 'comment'
+            content_item['author_url'] = author_url
+            content_item['article_url'] = ''
+            content_item['publish_time'] = publish_time
+            content_item['content'] = content
+            content_item['search_id'] = self.search_id
+            content_item['source'] = ''
+            content_item['attitudes_count'] = like_counts
+            content_item['comments_count'] = comments_count
+            content_item['detail_id'] = comment_id
+            content_item['mblogid'] = ''
+            yield content_item
