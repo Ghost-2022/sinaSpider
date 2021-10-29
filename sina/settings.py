@@ -21,12 +21,12 @@ NEWSPIDER_MODULE = 'sina.spiders'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-# CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 2
+DOWNLOAD_DELAY = 1
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # CONCURRENT_REQUESTS_PER_IP = 16
@@ -105,7 +105,7 @@ MYSQL_SETTING = {
     "PASSWORD": "TT4RVhRjlJUwjEj*",
     "PORT": 3506,
     # 数据库连接编码
-    'DB_CHARSET': 'utf8',
+    'DB_CHARSET': 'utf8mb4',
     # mincached : 启动时开启的闲置连接数量(缺省值 0 开始时不创建连接)
     'DB_MIN_CACHED': 10,
     # maxcached : 连接池中允许的闲置的最多连接数量(缺省值 0 代表不闲置连接池大小)
@@ -128,6 +128,7 @@ MYSQL_SETTING = {
 
 COOKIES_PATH = os.path.join(PROJECT_PATH, 'sina/data/sina-cookies.txt')
 
+FINISHED_LIST_KEY = 'spider_finish_list'
 
-# LOG_LEVEL = 'DEBUG'
-# LOG_FILE = 'logs/spider.log'
+LOG_LEVEL = 'INFO'
+LOG_FILE = 'spider.log'

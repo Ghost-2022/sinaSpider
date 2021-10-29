@@ -13,11 +13,17 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 from sina.spiders import sina_spider
+from sina import settings
 
 
 def start():
-    conn = redis.Redis(host='146.56.219.98', port=16379, password='Qm1lrYiMe8wx2sT7')
-    data = json.loads(conn.lrange('start_urls', 0, 10)[0])
+    conn = redis.Redis(
+        host=settings.REDIS_SETTING['HOST'],
+        port=settings.REDIS_SETTING['PORT'],
+        password=settings.REDIS_SETTING['PASSWORD']
+    )
+    data = json.loads(conn.rpoplpush('start_urls', 'start_urls'))
+    # data = json.loads(conn.lpop('start_urls'))
     start_time = data['start_time']
     end_time = data['end_time']
     key_word = data['keyword']

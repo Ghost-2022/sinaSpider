@@ -16,6 +16,7 @@ class SinaSpiderSpider(scrapy.Spider):
     name = 'sinaSpider'
     allowed_domains = ['weibo.com']
     start_urls = [settings.SINA_ACCOUNT_URL.format(int(time.time() * 1000))]
+    cookies = {}
 
     def __init__(self, key_word=None, start_time='', end_time='',
                  search_id: int = 0, *args, **kwargs):
@@ -46,9 +47,9 @@ class SinaSpiderSpider(scrapy.Spider):
         return {item.name: item.value for item in cookies}
 
     def start_requests(self):
-        cookies = self.get_cookies()
+        self.cookies = self.get_cookies()
         for url in self.start_urls:
-            yield Request(url, cookies=cookies)
+            yield Request(url, cookies=self.cookies)
 
     def parse(self, response: scrapy.http.Response, **kwargs):
 
@@ -78,7 +79,7 @@ class SinaSpiderSpider(scrapy.Spider):
         detail_id = data.get('mid', '')
         author = data.get('user', {}).get('screen_name', '')
         profile_url = data.get('user', {}).get('profile_url', '')
-        author_url = response.urljoin(profile_url) if profile_url else ''
+        author_url = parse.urljoin('https://weibo.com/', profile_url) if profile_url else ''
         try:
             publish_time = datetime.datetime.strptime(data.get('created_at', ''), '%a %b %d %H:%M:%S %z %Y')
         except Exception:
@@ -88,15 +89,15 @@ class SinaSpiderSpider(scrapy.Spider):
         source = data.get('source', '').split()
         attitudes_count = data.get('attitudes_count', 0)
         comments_count = data.get('comments_count', 0)
-        if data.get('isLongText') and mblogid:
-            long_text_url = 'https://weibo.com/ajax/statuses/longtext?id={}'.format(mblogid)
-            try:
-                resp = requests.get(long_text_url, headers=settings.DEFAULT_REQUEST_HEADERS)
-                long_text_data = resp.json()
-            except Exception:
-                self.logger.error(f"长文本获取失败：{long_text_url}, {traceback.format_exc()}")
-            else:
-                content = long_text_data.get('data', {}).get('longTextContent', '')
+        # if data.get('isLongText') and mblogid:
+        #     long_text_url = 'https://weibo.com/ajax/statuses/longtext?id={}'.format(mblogid)
+        #     try:
+        #         resp = requests.get(long_text_url, headers=settings.DEFAULT_REQUEST_HEADERS, cookies=self.cookies)
+        #         long_text_data = resp.json()
+        #     except Exception:
+        #         self.logger.error(f"长文本获取失败：{long_text_url} \n,{traceback.format_exc()}")
+        #     else:
+        #         content = long_text_data.get('data', {}).get('longTextContent', '')
         content_item = items.SinaItem()
         content_item['author'] = author
         content_item['content_type'] = 'article'
@@ -127,7 +128,7 @@ class SinaSpiderSpider(scrapy.Spider):
             comment_id = item.get('mid', '')
             author = item.get('user', {}).get('screen_name', '')
             profile_url = item.get('user', {}).get('profile_url', '')
-            author_url = response.urljoin(profile_url) if profile_url else ''
+            author_url = parse.urljoin('https://weibo.com/', profile_url) if profile_url else ''
             try:
                 publish_time = datetime.datetime.strptime(
                     item.get('created_at', ''), '%a %b %d %H:%M:%S %z %Y')

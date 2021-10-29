@@ -5,17 +5,22 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
+import logging
+
+import traceback
+import redis
 
 from sina.database import get_conn
+from sina import settings
 
 
 class SinaPipeline:
     def __init__(self):
         self.connection_pool = get_conn()
-        self.cursor, self.conn = self.connection_pool.get_conn()
+        self.cursor, self.conn = None, None
 
     def process_item(self, item, spider):
+        self.cursor, self.conn = self.connection_pool.get_conn()
         if item['content_type'] == 'article':
             sql = "insert into article_list (search_id, author, author_url," \
                   " publish_time, content, source, attitudes_count, article_url, " \
@@ -34,11 +39,19 @@ class SinaPipeline:
             params = (item['search_id'], item['detail_id'], item['author'],
                       item['author_url'], item['publish_time'], item['content'],
                       item['attitudes_count'], item['comments_count'])
-
-        self.cursor.execute(sql, params)
-        self.conn.commit()
+        try:
+            self.cursor.execute(sql, params)
+            self.conn.commit()
+        except Exception:
+            logging.error(f'数据存储失败：{sql}, {params}, {traceback.format_exc()}')
         return item
 
-    def close(self):
-        self.cursor.close()
-        self.conn.close()
+    def close_spider(self, spider):
+        if self.cursor is not None:
+            self.cursor.close()
+            self.conn.close()
+        conn = redis.Redis(
+            host=settings.REDIS_SETTING['HOST'],
+            port=settings.REDIS_SETTING['PORT'],
+            password=settings.REDIS_SETTING['PASSWORD'])
+        conn.rpush(settings.FINISHED_LIST_KEY, spider.search_id)
