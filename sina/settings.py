@@ -94,7 +94,7 @@ SINA_ACCOUNT_URL = "https://account.weibo.com/set/aj/iframe/schoollist?province=
 REDIS_SETTING = {
     "HOST": "localhost",
     "PORT": "6379",
-    # "PASSWORD": "Qm1lrYiMe8wx2sT7",
+    "PASSWORD": "",
     "MAX_CONNECTIONS": 100
 }
 
