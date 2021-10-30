@@ -6,12 +6,14 @@
 
 # useful for handling different item types with a single interface
 import logging
+import json
 
 import traceback
 import redis
 
 from sina.database import get_conn
 from sina import settings
+from cron import analysis_script
 
 
 class SinaPipeline:
@@ -47,11 +49,31 @@ class SinaPipeline:
         return item
 
     def close_spider(self, spider):
-        if self.cursor is not None:
-            self.cursor.close()
-            self.conn.close()
         conn = redis.Redis(
             host=settings.REDIS_SETTING['HOST'],
             port=settings.REDIS_SETTING['PORT'],
             password=settings.REDIS_SETTING['PASSWORD'])
         conn.rpush(settings.FINISHED_LIST_KEY, spider.search_id)
+        article_pic = analysis_script.generate_word_cloud(
+            spider.search_id, 'article_list')
+        comment_pic = analysis_script.generate_word_cloud(
+            spider.search_id, 'comment_list')
+        # sql = "update search_history set info=%s where id = %s:"
+        # info = {'article_pic': article_pic, 'comment_pic': comment_pic}
+        # print((json.dumps(info), spider.search_id))
+        # self.cursor.execute(sql, (json.dumps(info), spider.search_id))
+        if self.cursor is not None:
+            self.cursor.close()
+            self.conn.close()
+
+
+if __name__ == '__main__':
+    # article_pic = analysis_script.generate_word_cloud(
+    #     20, 'article_list')
+    # comment_pic = analysis_script.generate_word_cloud(
+    #     spider.search_id, 'comment_list')
+    class Spider:
+        search_id = 20
+    s = Spider()
+    p = SinaPipeline()
+    p.close_spider(s)

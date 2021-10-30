@@ -60,7 +60,7 @@ class SinaSpiderSpider(scrapy.Spider):
             for url in self.urls:
                 yield Request(url, callback=self.parse)
 
-        for next_url in next_urls:
+        for next_url in next_urls[:1]:
             yield Request(response.urljoin(next_url.get()), callback=self.parse)
 
         for detail_url in response.xpath('//p[@class="from"]/a[1]/@href'):
@@ -89,15 +89,6 @@ class SinaSpiderSpider(scrapy.Spider):
         source = data.get('source', '').split()
         attitudes_count = data.get('attitudes_count', 0)
         comments_count = data.get('comments_count', 0)
-        # if data.get('isLongText') and mblogid:
-        #     long_text_url = 'https://weibo.com/ajax/statuses/longtext?id={}'.format(mblogid)
-        #     try:
-        #         resp = requests.get(long_text_url, headers=settings.DEFAULT_REQUEST_HEADERS, cookies=self.cookies)
-        #         long_text_data = resp.json()
-        #     except Exception:
-        #         self.logger.error(f"长文本获取失败：{long_text_url} \n,{traceback.format_exc()}")
-        #     else:
-        #         content = long_text_data.get('data', {}).get('longTextContent', '')
         content_item = items.SinaItem()
         content_item['author'] = author
         content_item['content_type'] = 'article'

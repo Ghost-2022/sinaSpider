@@ -126,7 +126,10 @@ MYSQL_SETTING = {
     'DB_SET_SESSION': None
 }
 
-COOKIES_PATH = os.path.join(PROJECT_PATH, 'sina/data/sina-cookies.txt')
+WEB_PROJECT_PATH = PROJECT_PATH
+
+COOKIES_PATH = os.path.join(PROJECT_PATH, 'data', 'sina-cookies.txt')
+STATIC_DIR = os.path.join(PROJECT_PATH, 'static')
 
 FINISHED_LIST_KEY = 'spider_finish_list'
 
