@@ -22,18 +22,20 @@ def start():
         port=settings.REDIS_SETTING['PORT'],
         password=settings.REDIS_SETTING['PASSWORD']
     )
-    data = json.loads(conn.rpoplpush('start_urls', 'start_urls'))
-    # data = json.loads(conn.lpop('start_urls'))
-    start_time = data['start_time']
-    end_time = data['end_time']
-    key_word = data['keyword']
-    search_id = data['search_id']
+    # data = json.loads(conn.rpoplpush('start_urls', 'start_urls'))
+    data = conn.lpop('start_urls')
+    if data:
+        data = json.loads(data)
+        start_time = data['start_time']
+        end_time = data['end_time']
+        key_word = data['keyword']
+        search_id = data['search_id']
 
-    process = CrawlerProcess(get_project_settings())
+        process = CrawlerProcess(get_project_settings())
 
-    process.crawl(sina_spider.SinaSpiderSpider, key_word=key_word,
-                  start_time=start_time, end_time=end_time, search_id=search_id)
-    process.start()  # the script will block here until the crawling is finished
+        process.crawl(sina_spider.SinaSpiderSpider, key_word=key_word,
+                      start_time=start_time, end_time=end_time, search_id=search_id)
+        process.start()  # the script will block here until the crawling is finished
 
 
 if __name__ == '__main__':

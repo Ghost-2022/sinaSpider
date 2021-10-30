@@ -59,7 +59,6 @@ def generate_word_cloud(search_id, table):
     return img_path
 
 
-
 if __name__ == '__main__':
     # print(get_data(20))
     generate_word_cloud(20, 'article_list')
