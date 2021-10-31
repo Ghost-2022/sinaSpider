@@ -10,6 +10,7 @@ import re
 import os
 
 import jieba
+import collections
 from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 
@@ -27,12 +28,13 @@ def get_article_data(search_id, table='article_list'):
 def get_data(search_id, table='article_list'):
     content_list = get_article_data(search_id, table)
     content = re.sub('\[.*?\]|http[:/\.\w]*|\s', '', ' '.join(content_list))
-    return ' '.join([item for item in jieba.lcut(content) if len(item) >= 2])
+    return [item for item in jieba.lcut(content) if len(item) >= 2]
 
 
 def generate_word_cloud(search_id, table):
     space_list = get_data(search_id, table)
     logging.info(f'space_list: {space_list}')
+    counts = collections.Counter(space_list)
     font_path = os.path.join(settings.PROJECT_PATH, 'cron/AaBanRuoKaiShu-2.ttf')
     wc = WordCloud(width=1400, height=2200,
                    background_color='white',
@@ -45,7 +47,7 @@ def generate_word_cloud(search_id, table):
                    relative_scaling=0.6,  # 设置字体大小与词频的关联程度为0.4
                    random_state=50,
                    scale=2
-                   ).generate(space_list)
+                   ).generate(' '.join(space_list))
 
     plt.imshow(wc)  # 显示词云
     plt.axis('off')  # 关闭x,y轴
@@ -55,8 +57,8 @@ def generate_word_cloud(search_id, table):
         os.makedirs(img_dir)
     img_abs_path = os.path.join(img_dir, img_name)
     wc.to_file(img_abs_path)  # 保存词云图
-    img_path = os.path.join(f'search_{search_id}', img_name)
-    return img_path
+    # img_path = os.path.join(f'search_{search_id}', img_name)
+    return counts
 
 
 if __name__ == '__main__':

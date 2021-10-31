@@ -54,14 +54,15 @@ class SinaPipeline:
             port=settings.REDIS_SETTING['PORT'],
             password=settings.REDIS_SETTING['PASSWORD'])
         conn.rpush(settings.FINISHED_LIST_KEY, spider.search_id)
-        article_pic = analysis_script.generate_word_cloud(
+
+        article_counts = analysis_script.generate_word_cloud(
             spider.search_id, 'article_list')
-        comment_pic = analysis_script.generate_word_cloud(
+        comment_counts = analysis_script.generate_word_cloud(
             spider.search_id, 'comment_list')
-        # sql = "update search_history set info=%s where id = %s:"
-        # info = {'article_pic': article_pic, 'comment_pic': comment_pic}
-        # print((json.dumps(info), spider.search_id))
-        # self.cursor.execute(sql, (json.dumps(info), spider.search_id))
+        info = {'comment_counts': comment_counts, 'article_counts': article_counts}
+        sql = "update search_history set info=%s where id = %s;"
+        self.cursor.execute(sql, (json.dumps(info), spider.search_id))
+        self.conn.commit()
         if self.cursor is not None:
             self.cursor.close()
             self.conn.close()
