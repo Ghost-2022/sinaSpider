@@ -68,8 +68,8 @@ class SinaPipeline:
             'article_emotion': article_emotion,
             'comment_emotion': comment_emotion
         }
-        sql = "update search_history set info=%s where id = %s;"
-        self.cursor.execute(sql, (json.dumps(info), spider.search_id))
+        sql = "update search_history set info=%s, status=%s where id = %s;"
+        self.cursor.execute(sql, (json.dumps(info), 1, spider.search_id))
         self.conn.commit()
         if self.cursor is not None:
             self.cursor.close()
