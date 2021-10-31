@@ -134,4 +134,4 @@ COOKIES_PATH = os.path.join(STATIC_DIR, 'sina-cookies.txt')
 FINISHED_LIST_KEY = 'spider_finished:{}'
 
 LOG_LEVEL = 'INFO'
-LOG_FILE = 'spider.log'
+LOG_FILE = os.path.join(PROJECT_PATH, 'spider.log')
