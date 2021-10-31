@@ -13,6 +13,7 @@ import jieba
 import collections
 from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
+from snownlp import SnowNLP
 
 from sina import database, settings
 conn_pool = database.get_conn()
@@ -61,7 +62,23 @@ def generate_word_cloud(search_id, table):
     return counts
 
 
+def emotion_analysis(search_id, table):
+    content_list = get_article_data(search_id, table)
+    data = {'negative': 0, 'positive': 0, 'neutral': 0}
+    for item in content_list:
+        s = SnowNLP(item)
+        if s.sentiments >= 0.6:
+            data['positive'] += 1
+        elif s.sentiments >= 0.4:
+            data['neutral'] += 1
+        else:
+            data['negative'] += 1
+    return data
+
+
 if __name__ == '__main__':
     # print(get_data(20))
-    generate_word_cloud(20, 'article_list')
-    generate_word_cloud(20, 'comment_list')
+    # generate_word_cloud(20, 'article_list')
+    # generate_word_cloud(20, 'comment_list')
+    emotion_analysis(20, 'article_list')
+    emotion_analysis(20, 'comment_list')

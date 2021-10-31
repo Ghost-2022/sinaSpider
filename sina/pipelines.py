@@ -59,7 +59,15 @@ class SinaPipeline:
             spider.search_id, 'article_list')
         comment_counts = analysis_script.generate_word_cloud(
             spider.search_id, 'comment_list')
-        info = {'comment_counts': comment_counts, 'article_counts': article_counts}
+        article_emotion = analysis_script.emotion_analysis(spider.search_id, 'article_list')
+        comment_emotion = analysis_script.emotion_analysis(spider.search_id, 'comment_list')
+
+        info = {
+            'comment_counts': comment_counts,
+            'article_counts': article_counts,
+            'article_emotion': article_emotion,
+            'comment_emotion': comment_emotion
+        }
         sql = "update search_history set info=%s where id = %s;"
         self.cursor.execute(sql, (json.dumps(info), spider.search_id))
         self.conn.commit()
