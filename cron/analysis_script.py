@@ -64,7 +64,7 @@ def generate_word_cloud(search_id, table):
 
 def emotion_analysis(search_id, table):
     content_list = get_article_data(search_id, table)
-    data = {'negative': 0, 'positive': 0, 'neutral': 0}
+    data = {'消极': 0, '积极': 0, '中性': 0}
     for item in content_list:
         s = SnowNLP(item)
         if s.sentiments >= 0.6:
