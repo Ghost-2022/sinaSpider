@@ -99,10 +99,10 @@ REDIS_SETTING = {
 }
 
 MYSQL_SETTING = {
-    "HOST": "localhost",
+    "HOST": "146.56.219.98",
     "NAME": "sina",
-    "USER": "sina",
-    "PASSWORD": "mN7cJXZJcWtzEFz3",
+    "USER": "lichunxu",
+    "PASSWORD": "TT4RVhRjlJUwjEj*",
     "PORT": 3506,
     # 数据库连接编码
     'DB_CHARSET': 'utf8mb4',

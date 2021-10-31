@@ -37,7 +37,7 @@ def generate_word_cloud(search_id, table):
     logging.info(f'space_list: {space_list}')
     counts = collections.Counter(space_list)
     font_path = os.path.join(settings.PROJECT_PATH, 'cron/AaBanRuoKaiShu-2.ttf')
-    wc = WordCloud(width=1400, height=2200,
+    wc = WordCloud(width=550, height=400,
                    background_color='white',
                    mode='RGB',
                    # mask=back_ground,  # 添加蒙版，生成指定形状的词云，并且词云图的颜色可从蒙版里提取
@@ -52,7 +52,7 @@ def generate_word_cloud(search_id, table):
 
     plt.imshow(wc)  # 显示词云
     plt.axis('off')  # 关闭x,y轴
-    img_name = table.split('_')[0]+'.png'
+    img_name = table.split('_')[0]+'.jpg'
     img_dir = os.path.join(settings.STATIC_DIR, f'search_{search_id}')
     if not os.path.exists(img_dir):
         os.makedirs(img_dir)
@@ -78,7 +78,7 @@ def emotion_analysis(search_id, table):
 
 if __name__ == '__main__':
     # print(get_data(20))
-    # generate_word_cloud(20, 'article_list')
-    # generate_word_cloud(20, 'comment_list')
-    emotion_analysis(20, 'article_list')
-    emotion_analysis(20, 'comment_list')
+    generate_word_cloud(20, 'article_list')
+    generate_word_cloud(20, 'comment_list')
+    # emotion_analysis(20, 'article_list')
+    # emotion_analysis(20, 'comment_list')
