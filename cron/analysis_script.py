@@ -68,11 +68,11 @@ def emotion_analysis(search_id, table):
     for item in content_list:
         s = SnowNLP(item)
         if s.sentiments >= 0.6:
-            data['positive'] += 1
+            data['积极'] += 1
         elif s.sentiments >= 0.4:
-            data['neutral'] += 1
+            data['中性'] += 1
         else:
-            data['negative'] += 1
+            data['消极'] += 1
     return data
 
 

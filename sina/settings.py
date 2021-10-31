@@ -92,9 +92,9 @@ PROJECT_PATH = os.path.dirname(os.path.dirname(__file__))
 SINA_ACCOUNT_URL = "https://account.weibo.com/set/aj/iframe/schoollist?province=11&city=&type=1&_t=0&__rnd={}"
 
 REDIS_SETTING = {
-    "HOST": "localhost",
-    "PORT": "6379",
-    "PASSWORD": "",
+    "HOST": "146.56.219.98",
+    "PORT": "16379",
+    "PASSWORD": "Qm1lrYiMe8wx2sT7",
     "MAX_CONNECTIONS": 100
 }
 
@@ -126,10 +126,10 @@ MYSQL_SETTING = {
     'DB_SET_SESSION': None
 }
 
-WEB_PROJECT_PATH = '/www/sina/'
+WEB_PROJECT_PATH = '/code/sina/'
+STATIC_DIR = os.path.join(WEB_PROJECT_PATH, 'static')
 
-COOKIES_PATH = os.path.join(WEB_PROJECT_PATH, 'data', 'sina-cookies.txt')
-STATIC_DIR = os.path.join(PROJECT_PATH, 'static')
+COOKIES_PATH = os.path.join(STATIC_DIR, 'sina-cookies.txt')
 
 FINISHED_LIST_KEY = 'spider_finished:{}'
 
