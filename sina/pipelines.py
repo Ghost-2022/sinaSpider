@@ -53,7 +53,8 @@ class SinaPipeline:
             host=settings.REDIS_SETTING['HOST'],
             port=settings.REDIS_SETTING['PORT'],
             password=settings.REDIS_SETTING['PASSWORD'])
-        conn.rpush(settings.FINISHED_LIST_KEY, spider.search_id)
+        redis_key = settings.FINISHED_LIST_KEY.format(spider.search_id)
+        conn.set(redis_key, spider.search_id, ex=3600)
 
         article_counts = analysis_script.generate_word_cloud(
             spider.search_id, 'article_list')
