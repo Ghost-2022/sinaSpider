@@ -22,6 +22,8 @@ class SinaSpiderSpider(scrapy.Spider):
                  search_id: int = 0, *args, **kwargs):
         super(SinaSpiderSpider, self).__init__(*args, **kwargs)
         self.logger.info(f'爬取关键字：{key_word}, {start_time}, {end_time}')
+        self.start_time = datetime.datetime.strptime(start_time, '%Y-%m-%d-%H')
+        self.end_time = datetime.datetime.strptime(end_time, '%Y-%m-%d-%H')
         self.urls = self.generate_url(key_word, start_time, end_time)
         self.search_id = search_id
 
@@ -87,6 +89,10 @@ class SinaSpiderSpider(scrapy.Spider):
             publish_time = datetime.datetime.strptime(data.get('created_at', ''), '%a %b %d %H:%M:%S %z %Y')
         except Exception:
             publish_time = datetime.datetime.now()
+        if self.start_time < publish_time < self.end_time:
+            self.logger.info(f'时间错误：发布时间：{publish_time}')
+            return
+
         publish_time = publish_time.strftime('%Y-%m-%d %H:%M:%S')
         content = data.get('text_raw', '')
         source = data.get('source', '').split()
