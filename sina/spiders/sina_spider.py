@@ -89,7 +89,8 @@ class SinaSpiderSpider(scrapy.Spider):
             publish_time = datetime.datetime.strptime(data.get('created_at', ''), '%a %b %d %H:%M:%S %z %Y')
         except Exception:
             publish_time = datetime.datetime.now()
-        if self.start_time < publish_time < self.end_time:
+        publish_time = publish_time.replace(tzinfo=None)
+        if self.start_time > publish_time:
             self.logger.info(f'时间错误：发布时间：{publish_time}')
             return
 
