@@ -92,18 +92,18 @@ PROJECT_PATH = os.path.dirname(os.path.dirname(__file__))
 SINA_ACCOUNT_URL = "https://account.weibo.com/set/aj/iframe/schoollist?province=11&city=&type=1&_t=0&__rnd={}"
 
 REDIS_SETTING = {
-    "HOST": "146.56.219.98",
-    "PORT": "16379",
-    "PASSWORD": "Qm1lrYiMe8wx2sT7",
+    "HOST": "localhost",
+    "PORT": "6379",
+    "PASSWORD": "",
     "MAX_CONNECTIONS": 100
 }
 
 MYSQL_SETTING = {
-    "HOST": "146.56.219.98",
+    "HOST": "localhost",
     "NAME": "sina",
-    "USER": "lichunxu",
-    "PASSWORD": "TT4RVhRjlJUwjEj*",
-    "PORT": 3506,
+    "USER": "sina",
+    "PASSWORD": "mN7cJXZJcWtzEFz3",
+    "PORT": 3306,
     # 数据库连接编码
     'DB_CHARSET': 'utf8mb4',
     # mincached : 启动时开启的闲置连接数量(缺省值 0 开始时不创建连接)
@@ -126,7 +126,7 @@ MYSQL_SETTING = {
     'DB_SET_SESSION': None
 }
 
-WEB_PROJECT_PATH = '/code/sina/'
+WEB_PROJECT_PATH = '/www/sina/'
 STATIC_DIR = os.path.join(WEB_PROJECT_PATH, 'static')
 
 COOKIES_PATH = os.path.join(STATIC_DIR, 'sina-cookies.txt')
