@@ -24,6 +24,7 @@ def start():
     )
     # data = json.loads(conn.rpoplpush('start_urls', 'start_urls'))
     data = conn.lpop('start_urls')
+    os.environ['SCRAPY_SETTINGS_MODULE'] = 'sina.settings'
     if data:
         data = json.loads(data)
         start_time = data['start_time']
