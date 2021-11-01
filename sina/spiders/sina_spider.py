@@ -56,14 +56,14 @@ class SinaSpiderSpider(scrapy.Spider):
     def parse(self, response: scrapy.http.Response, **kwargs):
 
         next_urls = response.xpath('//span[@class="list"]//li/a/@href')
-        self.logger.info(fr'响应为：{response.text}')
+        # self.logger.info(fr'响应为：{response.text}')
         if not next_urls and 'account.weibo.com' in response.url:
             self.logger.info(f'cookie 刷新成功，即将请求目标链接')
             self.logger.info(f'目标链接为：{self.urls}')
             for url in self.urls:
                 yield Request(url, callback=self.parse)
 
-        for next_url in next_urls[:1]:
+        for next_url in next_urls:
             yield Request(response.urljoin(next_url.get()), callback=self.parse)
 
         for detail_url in response.xpath('//p[@class="from"]/a[1]/@href'):
