@@ -51,7 +51,7 @@ class SinaSpiderSpider(scrapy.Spider):
         self.cookies = self.get_cookies()
         self.logger.info(f'cookies: {self.cookies}')
         for url in self.start_urls:
-            yield Request(url, cookies=self.cookies)
+            yield Request(url, cookies=self.cookies, dont_filter=True)
 
     def parse(self, response: scrapy.http.Response, **kwargs):
 
