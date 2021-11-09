@@ -21,3 +21,4 @@ class SinaItem(scrapy.Item):
     detail_id = scrapy.Field()
     mblogid = scrapy.Field()
     content_type = scrapy.Field()
+    reposts_count = scrapy.Field()
