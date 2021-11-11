@@ -123,10 +123,10 @@ def main(search_id):
     comment_list = get_content_list(search_id, comment_table)
     a_word_count = generate_word_cloud(article_list, search_id, article_table)
     c_word_count = generate_word_cloud(comment_list, search_id, comment_table)
-    a_word_list = [{item[0]: item[1]} for item in
+    a_word_list = [{'name': item[0], 'value': item[1]} for item in
                    sorted(a_word_count.items(), key=lambda kv:(kv[1], kv[0]),
                           reverse=True)[:20]]
-    c_word_list = [{item[0]: item[1]} for item in
+    c_word_list = [{'name': item[0], 'value': item[1]} for item in
                    sorted(c_word_count.items(), key=lambda kv: (kv[1], kv[0]),
                           reverse=True)[:20]]
     article_emotion = emotion_analysis(article_list)
