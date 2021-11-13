@@ -144,7 +144,7 @@ class SinaSpiderSpider(scrapy.Spider):
                 return
             publish_time = publish_time.strftime('%Y-%m-%d %H:%M:%S')
             content = item.get('text_raw', '')
-            like_counts = item.get('like_counts', '')
+            like_counts = item.get('like_counts', 0)
             comments_count = len(item.get('comments', []))
 
             content_item = items.SinaItem()
