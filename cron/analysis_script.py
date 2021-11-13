@@ -8,6 +8,7 @@
 import logging
 import re
 import os
+import traceback
 
 import jieba
 import collections
@@ -51,7 +52,7 @@ def generate_word_cloud(content_list, search_id, table):
                    relative_scaling=0.6,  # 设置字体大小与词频的关联程度为0.4
                    random_state=50,
                    scale=2
-                   ).generate(' '.join(space_list))
+                   ).generate_from_frequencies(counts)
     img_name = table.split('_')[0]+'.jpg'
     img_dir = os.path.join(settings.STATIC_DIR, f'search_{search_id}')
     if not os.path.exists(img_dir):
@@ -70,7 +71,11 @@ def emotion_analysis(content_list):
     """
     negative, positive, neutral = 0, 0, 0
     for item in content_list:
-        s = SnowNLP(item)
+        if item:
+            s = SnowNLP(item)
+        else:
+            logging.error(f'内容：{item}情感分析失败：{traceback.format_exc()}')
+            continue
         if s.sentiments >= 0.6:
             positive += 1
         elif s.sentiments >= 0.4:
