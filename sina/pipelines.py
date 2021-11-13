@@ -26,19 +26,19 @@ class SinaPipeline:
         if item['content_type'] == 'article':
             sql = "insert into article_list (search_id, author, author_url," \
                   " publish_time, content, source, attitudes_count, article_url, " \
-                  f" comments_count, detail_id, mblogid) value(%s, %s, %s, %s," \
-                  f" %s, %s, %s, %s, %s, %s, %s)"
+                  f" comments_count, detail_id, mblogid, reposts_count) value(%s, %s, %s, %s," \
+                  f" %s, %s, %s, %s, %s, %s, %s, %s)"
 
             params = (item['search_id'], item['author'], item['author_url'],
                       item['publish_time'], item['content'], item['source'],
                       item['attitudes_count'], item['article_url'],
                       item['comments_count'], item['detail_id'],
-                      item['mblogid'])
+                      item['mblogid'], item['reposts_count'])
         else:
-            sql = "insert into comment_list (search_id, detail_id, author, " \
+            sql = "insert into comment_list (search_id, detail_id, author, article_url," \
                   "author_url, publish_time, content, like_counts, comments_count)" \
-                  " value(%s, %s, %s, %s, %s, %s, %s, %s)"
-            params = (item['search_id'], item['detail_id'], item['author'],
+                  " value(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            params = (item['search_id'], item['detail_id'], item['author'], item['article_url'],
                       item['author_url'], item['publish_time'], item['content'],
                       item['attitudes_count'], item['comments_count'])
         logging.info(f'存储数据：{params}')
@@ -57,19 +57,7 @@ class SinaPipeline:
         redis_key = settings.FINISHED_LIST_KEY.format(spider.search_id)
         conn.set(redis_key, spider.search_id, ex=3600)
 
-        article_counts = analysis_script.generate_word_cloud(
-            spider.search_id, 'article_list')
-        comment_counts = analysis_script.generate_word_cloud(
-            spider.search_id, 'comment_list')
-        article_emotion = analysis_script.emotion_analysis(spider.search_id, 'article_list')
-        comment_emotion = analysis_script.emotion_analysis(spider.search_id, 'comment_list')
-
-        info = {
-            'comment_counts': comment_counts,
-            'article_counts': article_counts,
-            'article_emotion': article_emotion,
-            'comment_emotion': comment_emotion
-        }
+        info = analysis_script.main(spider.search_id)
         sql = "update search_history set info=%s, status=%s where id = %s;"
         self.cursor.execute(sql, (json.dumps(info), 1, spider.search_id))
         self.conn.commit()

@@ -99,6 +99,7 @@ class SinaSpiderSpider(scrapy.Spider):
         source = data.get('source', '').split()
         attitudes_count = data.get('attitudes_count', 0)
         comments_count = data.get('comments_count', 0)
+        reposts_count = data.get('reposts_count', 0)
         content_item = items.SinaItem()
         content_item['author'] = author
         content_item['content_type'] = 'article'
@@ -112,10 +113,11 @@ class SinaSpiderSpider(scrapy.Spider):
         content_item['comments_count'] = comments_count
         content_item['detail_id'] = detail_id
         content_item['mblogid'] = mblogid
+        content_item['reposts_count'] = reposts_count
         yield content_item
 
-        comment_url = 'https://weibo.com/ajax/statuses/buildComments?is_reload=1&id={}' \
-                      '&is_show_bulletin=2&is_mix=0&count=40'.format(detail_id)
+        comment_url = f'https://weibo.com/ajax/statuses/buildComments?is_reload=1&id={detail_id}' \
+                      f'&is_show_bulletin=2&is_mix=0&count=40#{content_item["article_url"]}'
         yield Request(comment_url, callback=self.parse_comment)
 
     def parse_comment(self, response: scrapy.http.Response, **kwargs):
@@ -124,7 +126,7 @@ class SinaSpiderSpider(scrapy.Spider):
         except Exception:
             self.logger.error(f'数据解析异常：{response.url}, {response.text}')
             return
-
+        article_url = response.request.url.split("#")[-1]
         for item in data:
             comment_id = item.get('mid', '')
             author = item.get('user', {}).get('screen_name', '')
@@ -135,6 +137,11 @@ class SinaSpiderSpider(scrapy.Spider):
                     item.get('created_at', ''), '%a %b %d %H:%M:%S %z %Y')
             except Exception:
                 publish_time = datetime.datetime.now()
+            publish_time = publish_time.replace(tzinfo=None)
+            if self.start_time > publish_time or self.end_time + \
+                    datetime.timedelta(days=2) < publish_time:
+                self.logger.info(f'时间错误：发布时间：{publish_time}')
+                return
             publish_time = publish_time.strftime('%Y-%m-%d %H:%M:%S')
             content = item.get('text_raw', '')
             like_counts = item.get('like_counts', '')
@@ -144,7 +151,7 @@ class SinaSpiderSpider(scrapy.Spider):
             content_item['author'] = author
             content_item['content_type'] = 'comment'
             content_item['author_url'] = author_url
-            content_item['article_url'] = ''
+            content_item['article_url'] = article_url
             content_item['publish_time'] = publish_time
             content_item['content'] = content
             content_item['search_id'] = self.search_id
