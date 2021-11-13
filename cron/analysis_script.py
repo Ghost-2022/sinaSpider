@@ -32,7 +32,7 @@ def get_content_list(search_id, table='article_list'):
     """
     sql = f"select content from {table} where search_id = {search_id}"
     cursor.execute(sql)
-    return [item[0].decode() for item in cursor.fetchall()]
+    return [re.sub('[^\u4e00-\u9fa5]', '', item[0].decode(),) for item in cursor.fetchall()]
 
 
 def generate_word_cloud(content_list, search_id, table):
