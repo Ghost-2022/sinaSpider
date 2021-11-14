@@ -39,8 +39,8 @@ def get_content_list(search_id, table='article_list'):
 def generate_word_cloud(content_list, search_id, table):
     content = re.sub('\[.*?\]|http[:/\.\w]*|\s', '', ' '.join(content_list))
     space_list = [item for item in jieba.lcut(content) if len(item) >= 2]
-    logging.info(f'space_list: {space_list}')
     counts = collections.Counter(space_list)
+    logging.info(f'space_list: {counts}')
     font_path = os.path.join(settings.PROJECT_PATH, 'cron/AaBanRuoKaiShu-2.ttf')
     wc = WordCloud(width=550, height=400,
                    background_color='white',
@@ -51,6 +51,7 @@ def generate_word_cloud(content_list, search_id, table):
                    max_font_size=150,
                    relative_scaling=0.6,  # 设置字体大小与词频的关联程度为0.4
                    random_state=50,
+                   collocations=False,
                    scale=2
                    ).generate_from_frequencies(counts)
     img_name = table.split('_')[0]+'.jpg'
@@ -157,4 +158,4 @@ if __name__ == '__main__':
     # emotion_analysis(20, 'article_list')
     # emotion_analysis(20, 'comment_list')
     # print(group_statistics(7, 'article_list'))
-    main(7)
+    main(13)
