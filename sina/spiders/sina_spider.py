@@ -24,23 +24,30 @@ class SinaSpiderSpider(scrapy.Spider):
         self.logger.info(f'爬取关键字：{key_word}, {start_time}, {end_time}')
         self.start_time = datetime.datetime.strptime(start_time, '%Y-%m-%d-%H')
         self.end_time = datetime.datetime.strptime(end_time, '%Y-%m-%d-%H')
-        self.urls = self.generate_url(key_word, start_time, end_time)
+        self.urls = self.generate_url(key_word, self.start_time, self.end_time)
         self.search_id = search_id
 
     @staticmethod
-    def generate_url(key_word: str, start_time: str, end_time: str):
+    def generate_url(key_word: str, start_time: datetime.datetime,
+                     end_time: datetime.datetime):
         """
         生成url
         """
-        params = {
-            'q': key_word,
-            'typeall': 1,
-            'timescope': f'custom:{start_time}:{end_time}',
-            'suball': 1,
-            'Refer': 'g'
-        }
-        base_url = f"https://s.weibo.com/weibo?{parse.urlencode(params, safe=':')}"
-        return [base_url]
+        urls = []
+        hours = int((end_time-start_time).total_seconds())//3600
+        for i in range(hours+1):
+            s_time = (start_time+datetime.timedelta(hours=i)).strftime('%Y-%m-%d-%H')
+            e_time = (start_time+datetime.timedelta(hours=i+1)).strftime('%Y-%m-%d-%H')
+            params = {
+                'q': key_word,
+                'typeall': 1,
+                'timescope': f'custom:{s_time}:{e_time}',
+                'suball': 1,
+                'Refer': 'g'
+            }
+            base_url = f"https://s.weibo.com/weibo?{parse.urlencode(params, safe=':')}"
+            urls.append(base_url)
+        return urls
 
     @staticmethod
     def get_cookies():

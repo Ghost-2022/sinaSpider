@@ -19,10 +19,9 @@ from cron import analysis_script
 class SinaPipeline:
     def __init__(self):
         self.connection_pool = get_conn()
-        self.cursor, self.conn = None, None
+        self.cursor, self.conn = self.connection_pool.get_conn()
 
     def process_item(self, item, spider):
-        self.cursor, self.conn = self.connection_pool.get_conn()
         if item['content_type'] == 'article':
             sql = "insert into article_list (search_id, author, author_url," \
                   " publish_time, content, source, attitudes_count, article_url, " \
@@ -72,7 +71,7 @@ if __name__ == '__main__':
     # comment_pic = analysis_script.generate_word_cloud(
     #     spider.search_id, 'comment_list')
     class Spider:
-        search_id = 20
+        search_id = 13
     s = Spider()
     p = SinaPipeline()
     p.close_spider(s)
