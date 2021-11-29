@@ -40,7 +40,7 @@ def generate_word_cloud(content_list, search_id, table):
     content = re.sub('\[.*?\]|http[:/\.\w]*|\s', '', ' '.join(content_list))
     space_list = [item for item in jieba.lcut(content) if len(item) >= 2]
     counts = collections.Counter(space_list)
-    logging.info(f'space_list: {counts}')
+    # logging.info(f'space_list: {counts}')
     font_path = os.path.join(settings.PROJECT_PATH, 'cron/AaBanRuoKaiShu-2.ttf')
     wc = WordCloud(width=550, height=400,
                    background_color='white',
@@ -75,7 +75,7 @@ def emotion_analysis(content_list):
         if item:
             s = SnowNLP(item)
         else:
-            logging.error(f'内容：{item}情感分析失败：{traceback.format_exc()}')
+            # logging.error(f'内容：{item}情感分析失败：{traceback.format_exc()}')
             continue
         if s.sentiments >= 0.6:
             positive += 1
