@@ -27,7 +27,7 @@ class ConnectionPool:
                 user=db_config['USER'],
                 passwd=db_config['PASSWORD'],
                 db=db_config['NAME'],
-                use_unicode=False,
+                use_unicode=True,
                 charset=db_config['DB_CHARSET']
             )
         return self.__pool.connection()

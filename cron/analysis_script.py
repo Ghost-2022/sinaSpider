@@ -33,7 +33,7 @@ def get_content_list(search_id, table='article_list'):
     """
     sql = f"select content from {table} where search_id = {search_id}"
     cursor.execute(sql)
-    return [re.sub('[^\u4e00-\u9fa5]', '', item[0].decode(),) for item in cursor.fetchall()]
+    return [re.sub('[^\u4e00-\u9fa5]', '', item[0],) for item in cursor.fetchall()]
 
 
 def generate_word_cloud(content_list, search_id, table):
@@ -97,18 +97,9 @@ def group_statistics(content_list):
 
     :return:
     """
-    rule_list = [
-        ('震情', '中国地震台网|北纬|东经|余震|三级以上|最大地震|地震快讯|震情周报|震中距|经度|纬度'),
-        ('祈福', '平安|祈福|祈祷|希望|保佑|愿'),
-        ('人员伤亡情况', '受伤|重伤|轻伤|死|亡'),
-        ('震感', '晕|晃|摇|震感|感觉|又震了|又来了|坐标|抖|又开始了|跑|睡'),
-        ('生命线工程情况', '铁路|高速|路况|封路|交通|信号|停电|停水|断网|列车|供电|高铁|道路|桥|电网'),
-        ('房屋破坏', '房|屋|墙|楼|倒|塌|裂|掉|碎'),
-        ('救援行动', '救援|奔赴|赶赴|物资|消防|应急避难|应急预案|续报|地震局|应急现场|地震应急|应急管理|救灾|安置'),
-        ('地震科普', '科普|科学避震|知识|自救方法|专家|防范措施|谣言|躲避地震|学习|避险|预警|前兆|地震波'),
-        ('心理变化', '害怕|恐怖|吓|不敢|呜呜|怕|幻觉|担心|怎么样|想问|求求|还好|淡定'),
-        ('为应急响应点赞', '赞|点赞|棒棒|表扬|加油|挺住|相信|感动|厉害'),
-    ]
+    sql = "select label, rule from label_list WHERE is_del=0 limit 10;"
+    cursor.execute(sql)
+    rule_list = cursor.fetchall()
     result = {'其他': 0}
     for content in content_list:
         flag = False
