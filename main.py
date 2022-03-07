@@ -30,5 +30,5 @@ if __name__ == '__main__':
         end_time = args[3]
         search_id = args[4]
         token = args[5]
-        start(key_word, start_time, end_time, search_id, token)
+        start(key_word, int(start_time), int(end_time), search_id, token)
 
