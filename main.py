@@ -17,7 +17,7 @@ def start(key_word, start_time, end_time, search_id, token):
 
     process = CrawlerProcess(get_project_settings())
 
-    process.crawl(sina_spider.SinaSpiderSpider, key_word=key_word, start_time=start_time, end_time=end_time,
+    process.crawl(sina_1.SinaSpider, key_word=key_word, start_time=start_time, end_time=end_time,
                   search_id=search_id, token=token)
     process.start()  # the script will block here until the crawling is finished
 
