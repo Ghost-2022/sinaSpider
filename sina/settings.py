@@ -128,7 +128,7 @@ MYSQL_SETTING = {
 }
 
 WEB_PROJECT_PATH = '/www/sina/'
-STATIC_DIR = os.path.join(WEB_PROJECT_PATH, 'static')
+STATIC_DIR = os.path.join(PROJECT_PATH, 'data')
 
 COOKIES_PATH = os.path.join(STATIC_DIR, 'sina-cookies.txt')
 
