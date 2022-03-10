@@ -35,9 +35,9 @@ class SinaSpider(scrapy.Spider):
         total = data.get('total_number', 0)
         if not data.get('statuses', []):
             return
-        for i in range(2, 201):
+        for i in range(2, 20):
             url = f_article.format(self.token, self.key_word, self.start_time, self.end_time, i)
-            yield Request(url, callback=self.parse, dont_filter=True)
+            yield Request(url, callback=self.parse)
         for item in data.get('statuses', []):
             content_item = items.SinaItem()
             content_item['detail_id'] = item['id']
@@ -73,7 +73,7 @@ class SinaSpider(scrapy.Spider):
             yield content_item
             if content_item['comments_count'] > 0:
                 c_url = f_comment.format(self.token, item['id'], 1)
-                yield Request(c_url, callback=self.parse_comment, dont_filter=True)
+                yield Request(c_url, callback=self.parse_comment)
 
     def parse_comment(self, response: scrapy.http.Response, **kwargs):
         try:
@@ -83,9 +83,9 @@ class SinaSpider(scrapy.Spider):
             return
         article_id = re.findall('id=(\d+?)&', response.url)[0]
         total = data.get('total_number', 0)
-        for i in range(2, 201):
+        for i in range(2, 20):
             url = f_comment.format(self.token, article_id, i)
-            yield Request(url, callback=self.parse, dont_filter=True)
+            yield Request(url, callback=self.parse)
         for item in data.get('comments', []):
             comment_item = items.SinaItem()
             comment_item['detail_id'] = item['id']
