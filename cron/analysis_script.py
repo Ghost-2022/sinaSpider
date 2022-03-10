@@ -37,6 +37,8 @@ def get_content_list(search_id, table='article_list'):
 
 
 def generate_word_cloud(content_list, search_id, table):
+    if not content_list:
+        return {}
     content = re.sub('\[.*?\]|http[:/\.\w]*|\s', '', ' '.join(content_list))
     space_list = [item for item in jieba.lcut(content) if len(item) >= 2]
     counts = collections.Counter(space_list)
@@ -149,4 +151,4 @@ if __name__ == '__main__':
     # emotion_analysis(20, 'article_list')
     # emotion_analysis(20, 'comment_list')
     # print(group_statistics(7, 'article_list'))
-    main(13)
+    main(29)
