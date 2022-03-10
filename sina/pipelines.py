@@ -40,7 +40,7 @@ class SinaPipeline:
             params = (item['search_id'], item['detail_id'], item['author'], item['article_url'],
                       item['author_url'], item['publish_time'], item['content'],
                       item['attitudes_count'], item['comments_count'])
-        # logging.info(f'存储数据：{params}')
+        logging.info(f'存储数据：{params}')
         try:
             self.cursor.execute(sql, params)
             self.conn.commit()
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     # comment_pic = analysis_script.generate_word_cloud(
     #     spider.search_id, 'comment_list')
     class Spider:
-        search_id = 13
+        search_id = 29
     s = Spider()
     p = SinaPipeline()
     p.close_spider(s)

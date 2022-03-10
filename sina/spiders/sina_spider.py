@@ -22,8 +22,8 @@ class SinaSpiderSpider(scrapy.Spider):
                  search_id: int = 0, *args, **kwargs):
         super(SinaSpiderSpider, self).__init__(*args, **kwargs)
         self.logger.info(f'爬取关键字：{key_word}, {start_time}, {end_time}')
-        self.start_time = datetime.datetime.strptime(start_time, '%Y-%m-%d-%H')
-        self.end_time = datetime.datetime.strptime(end_time, '%Y-%m-%d-%H')
+        self.start_time = datetime.datetime.fromtimestamp(int(start_time))
+        self.end_time = datetime.datetime.fromtimestamp(int(end_time))
         self.urls = self.generate_url(key_word, self.start_time, self.end_time)
         self.search_id = search_id
 
