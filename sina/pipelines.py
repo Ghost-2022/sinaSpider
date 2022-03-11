@@ -25,14 +25,14 @@ class SinaPipeline:
         if item['content_type'] == 'article':
             sql = "insert into article_list (search_id, author, author_url," \
                   " publish_time, content, source, attitudes_count, article_url, " \
-                  f" comments_count, detail_id, mblogid, reposts_count) value(%s, %s, %s, %s," \
-                  f" %s, %s, %s, %s, %s, %s, %s, %s)"
+                  " comments_count, detail_id, mblogid, reposts_count, lng, lat) value(%s, %s, %s, %s," \
+                  " %s, %s, %s, %s, %s, %s, %s, %s)"
 
             params = (item['search_id'], item['author'], item['author_url'],
                       item['publish_time'], item['content'], item['source'],
                       item['attitudes_count'], item['article_url'],
                       item['comments_count'], item['detail_id'],
-                      item['mblogid'], item['reposts_count'])
+                      item['mblogid'], item['reposts_count'], item['lng'], item['lat'])
         else:
             sql = "insert into comment_list (search_id, detail_id, author, article_url," \
                   "author_url, publish_time, content, like_counts, comments_count)" \
