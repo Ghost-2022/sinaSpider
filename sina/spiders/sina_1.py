@@ -35,7 +35,7 @@ class SinaSpider(scrapy.Spider):
         total = data.get('total_number', 0)
         if not data.get('statuses', []):
             return
-        for i in range(2, 20):
+        for i in range(2, 200):
             url = f_article.format(self.token, self.key_word, self.start_time, self.end_time, i)
             yield Request(url, callback=self.parse)
         for item in data.get('statuses', []):
@@ -71,9 +71,9 @@ class SinaSpider(scrapy.Spider):
             content_item['article_url'] = parse.urljoin('https://weibo.com/', f'{user_id}/{mid}')
             content_item['mblogid'] = mid
             yield content_item
-            if content_item['comments_count'] > 0:
-                c_url = f_comment.format(self.token, item['id'], 1)
-                yield Request(c_url, callback=self.parse_comment)
+            # if content_item['comments_count'] > 0:
+            #     c_url = f_comment.format(self.token, item['id'], 1)
+            #     yield Request(c_url, callback=self.parse_comment)
 
     def parse_comment(self, response: scrapy.http.Response, **kwargs):
         try:
