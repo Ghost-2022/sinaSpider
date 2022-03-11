@@ -63,7 +63,7 @@ class SinaSpider(scrapy.Spider):
             geo = item.get('geo', {})
             lng, lat = '', ''
             if geo:
-                lng, lat = geo['coordinates']
+                lat, lng = geo['coordinates']
             content_item['lng'] = lng
             content_item['lat'] = lat
             content_item['content_type'] = 'article'
