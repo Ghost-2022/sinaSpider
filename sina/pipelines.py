@@ -55,11 +55,12 @@ class SinaPipeline:
             password=settings.REDIS_SETTING['PASSWORD'])
         redis_key = settings.FINISHED_LIST_KEY.format(spider.search_id)
         conn.set(redis_key, spider.search_id, ex=3600)
-
+        logging.info(f'开始分析{spider.search_id}')
         info = analysis_script.main(spider.search_id)
         sql = "update search_history set info=%s, status=%s where id = %s;"
         self.cursor.execute(sql, (json.dumps(info), 1, spider.search_id))
         self.conn.commit()
+        logging.info(f'分析结束{spider.search_id}')
         if self.cursor is not None:
             self.cursor.close()
             self.conn.close()

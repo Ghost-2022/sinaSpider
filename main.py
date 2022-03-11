@@ -32,7 +32,7 @@ def start():
         end_time = data['end_time']
         key_word = data['keyword']
         search_id = data['search_id']
-        token = conn.get('sina-token')
+        token = conn.get('sina-token').decode()
 
         process = CrawlerProcess(get_project_settings())
 
