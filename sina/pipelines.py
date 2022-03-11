@@ -26,7 +26,7 @@ class SinaPipeline:
             sql = "insert into article_list (search_id, author, author_url," \
                   " publish_time, content, source, attitudes_count, article_url, " \
                   " comments_count, detail_id, mblogid, reposts_count, lng, lat) value(%s, %s, %s, %s," \
-                  " %s, %s, %s, %s, %s, %s, %s, %s)"
+                  " %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
             params = (item['search_id'], item['author'], item['author_url'],
                       item['publish_time'], item['content'], item['source'],
