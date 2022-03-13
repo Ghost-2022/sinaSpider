@@ -97,7 +97,8 @@ class SinaSpider(scrapy.Spider):
                 pub_time = datetime.datetime.strptime(item.get('created_at', ''), '%a %b %d %H:%M:%S %z %Y')
             except Exception:
                 pub_time = datetime.datetime.now()
-            if self.start_time > pub_time.timestamp():
+            pub_time_stamp = pub_time.timestamp()
+            if self.start_time > pub_time_stamp or self.end_time + 172800 > pub_time_stamp:
                 self.logger.info(f'时间错误：发布时间：{pub_time}')
                 continue
             comment_item['publish_time'] = pub_time.strftime('%Y-%m-%d %H:%M:%S')
