@@ -121,6 +121,8 @@ class SinaSpiderSpider(scrapy.Spider):
         content_item['detail_id'] = detail_id
         content_item['mblogid'] = mblogid
         content_item['reposts_count'] = reposts_count
+        content_item['lng'] = ''
+        content_item['lat'] = ''
         yield content_item
 
         comment_url = f'https://weibo.com/ajax/statuses/buildComments?is_reload=1&id={detail_id}' \
