@@ -24,3 +24,4 @@ class SinaItem(scrapy.Item):
     reposts_count = scrapy.Field()
     lng = scrapy.Field()
     lat = scrapy.Field()
+    cate_list = scrapy.Field()

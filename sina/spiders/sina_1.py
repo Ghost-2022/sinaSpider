@@ -7,11 +7,21 @@ import datetime
 import scrapy
 from scrapy import Request
 
-from sina import settings, items, sina_utils
+from sina import settings, items, sina_utils, database
 
 f_article = 'https://c.api.weibo.com/2/search/statuses/limited.json?access_token={}&q={}&starttime={}&endtime={' \
         '}&count=50&page={}'
 f_comment = 'https://c.api.weibo.com/2/comments/show/all.json?access_token={}&id={}&count=100&page={}'
+
+
+def get_rule_list():
+    conn_pool = database.get_conn()
+    cursor, conn = conn_pool.get_conn()
+    sql = "select label, rule from label_list WHERE is_del=0;"
+    cursor.execute(sql)
+    return cursor.fetchall()
+
+
 
 
 class SinaSpider(scrapy.Spider):
@@ -25,7 +35,17 @@ class SinaSpider(scrapy.Spider):
         self.start_time, self.end_time, self.key_word = start_time, end_time, key_word
         self.search_id, self.token = search_id, token
         self.start_urls = [f_article.format(token, key_word, start_time, end_time, 1)]
+        self.rule_list = get_rule_list()
 
+    def get_cate_list(self, content: str):
+        """
+        内容分类
+        """
+        cate_list = ','.join(item[0] for item in self.rule_list if re.findall(item[1], content))
+        if not cate_list:
+            cate_list = '其他'
+        return cate_list
+        
     def parse(self, response: scrapy.http.Response, **kwargs):
         try:
             data = json.loads(response.text)
@@ -70,6 +90,7 @@ class SinaSpider(scrapy.Spider):
             content_item['search_id'] = self.search_id
             content_item['article_url'] = parse.urljoin('https://weibo.com/', f'{user_id}/{mid}')
             content_item['mblogid'] = mid
+            content_item['cate_list'] = self.get_cate_list(content_item['content'])
             yield content_item
             if content_item['comments_count'] > 0:
                 c_url = f_comment.format(self.token, item['id'], 1)
@@ -110,4 +131,5 @@ class SinaSpider(scrapy.Spider):
             comment_item['attitudes_count'] = 0
             comment_item['comments_count'] = 0
             comment_item['reposts_count'] = 0
+            comment_item['cate_list'] = ''
             yield comment_item
