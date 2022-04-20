@@ -9,7 +9,15 @@ import scrapy
 import requests
 from scrapy import Request
 
-from sina import settings, items
+from sina import settings, items, database
+
+
+def get_rule_list():
+    conn_pool = database.get_conn()
+    cursor, conn = conn_pool.get_conn()
+    sql = "select label, rule from label_list WHERE is_del=0;"
+    cursor.execute(sql)
+    return cursor.fetchall()
 
 
 class SinaSpiderSpider(scrapy.Spider):
@@ -26,6 +34,7 @@ class SinaSpiderSpider(scrapy.Spider):
         self.end_time = datetime.datetime.fromtimestamp(int(end_time))
         self.urls = self.generate_url(key_word, self.start_time, self.end_time)
         self.search_id = search_id
+        self.rule_list = get_rule_list()
 
     @staticmethod
     def generate_url(key_word: str, start_time: datetime.datetime,
@@ -80,6 +89,15 @@ class SinaSpiderSpider(scrapy.Spider):
             detail_url = 'https://weibo.com/ajax/statuses/show?id={}'.format(mblogid)
             yield Request(detail_url, callback=self.parse_detail)
 
+    def get_cate_list(self, content: str):
+        """
+        内容分类
+        """
+        cate_list = ','.join(item[0] for item in self.rule_list if re.findall(item[1], content))
+        if not cate_list:
+            cate_list = '其他'
+        return cate_list
+
     def parse_detail(self, response: scrapy.http.Response, **kwargs):
         try:
             data = json.loads(response.text)
@@ -123,6 +141,7 @@ class SinaSpiderSpider(scrapy.Spider):
         content_item['reposts_count'] = reposts_count
         content_item['lng'] = ''
         content_item['lat'] = ''
+        content_item['cate_list'] = self.get_cate_list(content_item['content'])
         yield content_item
 
         comment_url = f'https://weibo.com/ajax/statuses/buildComments?is_reload=1&id={detail_id}' \
