@@ -35,11 +35,11 @@ class SinaPipeline:
                       item['mblogid'], item['reposts_count'], item['lng'], item['lat'], item['cate_list'])
         else:
             sql = "insert into comment_list (search_id, detail_id, author, article_url," \
-                  "author_url, publish_time, content, like_counts, comments_count)" \
-                  " value(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                  "author_url, publish_time, content, like_counts, comments_count, cate_list)" \
+                  " value(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             params = (item['search_id'], item['detail_id'], item['author'], item['article_url'],
                       item['author_url'], item['publish_time'], item['content'],
-                      item['attitudes_count'], item['comments_count'])
+                      item['attitudes_count'], item['comments_count'], item['cate_list'])
         logging.info(f'存储数据：{params}')
         try:
             self.cursor.execute(sql, params)

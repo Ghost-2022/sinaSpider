@@ -188,4 +188,5 @@ class SinaSpiderSpider(scrapy.Spider):
             content_item['comments_count'] = comments_count
             content_item['detail_id'] = comment_id
             content_item['mblogid'] = ''
+            content_item['cate_list'] = self.get_cate_list(content)
             yield content_item
